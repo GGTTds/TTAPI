@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace APITZ.Class
 {
-    public class Calc 
+    public class Calc : Interfase.ICalc
     {
-        public double GetSum(double a, double b)
+        public double GetSum(double a, double b) 
         {
             return a + b;
         }

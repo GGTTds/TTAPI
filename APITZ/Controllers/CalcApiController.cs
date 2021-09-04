@@ -11,7 +11,7 @@ namespace APITZ.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CalcApi : ControllerBase
+    public class CalcApiController : ControllerBase
     {
         public Class.Calc Calc = new Class.Calc();
         SemaphoreSlim MaxThr = new SemaphoreSlim(8000);
