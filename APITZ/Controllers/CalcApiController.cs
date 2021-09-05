@@ -13,16 +13,12 @@ namespace APITZ.Controllers
     [Route("api/[controller]")]
     public class CalcApiController : ControllerBase
     {
-        int Max = 12;
         public Class.Calc Calc = new Class.Calc();
-        //SemaphoreSlim MaxThr = new SemaphoreSlim(14);
+        SemaphoreSlim MaxThr = new SemaphoreSlim(8000);
 
         [HttpGet("{a}/{b}/{v}")]
         public async Task<ActionResult<double>> CalcActio(double a, double b, string v)
         {
-            using (SemaphoreSlim MaxThr = new SemaphoreSlim(Max))
-            {
-                int x = Max;
                 double Dat = 1;
                 if (MaxThr.CurrentCount > 10)
                 {
@@ -34,12 +30,13 @@ namespace APITZ.Controllers
                                    () =>
                                 { Dat = Calc.GetSum(a, b); });
                             MaxThr.Release();
-                            return Dat;
+                        return Dat;
                         case "-":
                             await MaxThr.WaitAsync();
                             Parallel.Invoke(
                                   () =>
                                 { Dat = Calc.GetMinus(a, b); });
+                            MaxThr.Release();
                             return Math.Round(Dat, 5);
                         case "*":
                             await MaxThr.WaitAsync();
@@ -70,7 +67,7 @@ namespace APITZ.Controllers
                 {
                     return StatusCode(503);
                 }
-            }
+            
 
         }
     }
