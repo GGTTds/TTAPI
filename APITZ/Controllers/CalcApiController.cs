@@ -67,8 +67,6 @@ namespace APITZ.Controllers
                 {
                     return StatusCode(503);
                 }
-            
-
         }
     }
 }
