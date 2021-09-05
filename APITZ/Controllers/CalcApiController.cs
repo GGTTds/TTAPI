@@ -15,42 +15,43 @@ namespace APITZ.Controllers
     {
         public Class.Calc Calc = new Class.Calc();
         SemaphoreSlim MaxThr = new SemaphoreSlim(8000);
+
         [HttpGet("{a}/{b}/{v}")]
-        public  ActionResult<double> CalcActio(double a, double b, string v)
+        public ActionResult<double> CalcActio(double a, double b, string v)
         {
-            double Dat = 0;
-            if (MaxThr.CurrentCount > 10)
-            {
-                switch (v)
+            double Dat = 1;
+                if (MaxThr.CurrentCount > 10)
                 {
-                    case "+":
-                        Parallel.Invoke(
-                            () => { MaxThr.WaitAsync(); Dat = Calc.GetSum(a, b); MaxThr.Release(); });
-                        return Dat;
-                    case "-":
-                        Parallel.Invoke(
-                           () => {  MaxThr.WaitAsync(); Dat = Calc.GetMinus(a, b); MaxThr.Release(); });
-                        return Dat;
-                    case "*":
-                         Parallel.Invoke(
-                            () => { MaxThr.WaitAsync(); Dat = Calc.GetMultiply(a, b); MaxThr.Release(); });
-                        return Dat;
-                    case "d":
-                        Parallel.Invoke(
-                           () => { MaxThr.WaitAsync(); Dat = Calc.GetDiv(a, b); MaxThr.Release(); });
-                        return Dat;
-                    case "%":
-                        Parallel.Invoke(
-                           () => { MaxThr.WaitAsync(); Dat = Calc.GetOstOtDiv(a, b); MaxThr.Release(); });
-                        return Dat;
-                    default:
-                        return StatusCode(404);
+                    switch (v)
+                    {
+                        case "+":
+                            Parallel.Invoke( async
+                                () => { await MaxThr.WaitAsync(); Dat = Calc.GetSum(a, b); MaxThr.Release(); });
+                            return Dat;
+                        case "-":
+                            Parallel.Invoke( async
+                               () => { await MaxThr.WaitAsync(); Dat = Calc.GetMinus(a, b); MaxThr.Release(); });
+                            return Math.Round(Dat, 5);
+                        case "*":
+                            Parallel.Invoke( async
+                               () => { await MaxThr.WaitAsync(); Dat = Calc.GetMultiply(a, b); MaxThr.Release(); });
+                            return Math.Round(Dat, 5);
+                        case "d":
+                            Parallel.Invoke( async
+                               () => { await MaxThr.WaitAsync(); Dat = Calc.GetDiv(a, b); MaxThr.Release(); });
+                            return Math.Round(Dat, 5);
+                        case "%":
+                            Parallel.Invoke( async
+                               () => { await MaxThr.WaitAsync(); Dat = Calc.GetOstOtDiv(a, b); MaxThr.Release(); });
+                            return Dat;
+                        default:
+                            return StatusCode(400);
+                    }
                 }
-            }
-            else
-            {
-                return StatusCode(503);
-            }
+                else
+                {
+                    return StatusCode(400);
+                }
 
         }
     }
